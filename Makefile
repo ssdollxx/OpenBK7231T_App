@@ -19,7 +19,7 @@ APP_VERSION ?= dev_$(TIMESTAMP)
 APPS_BUILD_CMD ?= build.sh
 
 # Default target is to run OpenBK7231T build
-all: OpenBK7231T
+all: OpenBK7231N
 
 # Full target will clean then build all
 .PHONY: full
@@ -35,72 +35,30 @@ else
 endif
 
 update-submodules: submodules
-	git add sdk/OpenBK7231T sdk/OpenBK7231N sdk/OpenXR809 sdk/OpenBL602 sdk/OpenW800 sdk/OpenW600 sdk/OpenLN882H
+	git add sdk/OpenBK7231N
 ifdef GITHUB_ACTIONS
 	git config user.name github-actions
 	git config user.email github-actions@github.com
 endif
 	git commit -m "feat: update SDKs" && git push || echo "No changes to commit"
 
-# Create symlink for App into SDK folder structure
-sdk/OpenBK7231T/apps/$(APP_NAME):
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	ln -s "$(shell pwd)/" "sdk/OpenBK7231T/apps/$(APP_NAME)"
+
 
 sdk/OpenBK7231N/apps/$(APP_NAME):
 	@echo Create symlink for $(APP_NAME) into sdk folder
 	ln -s "$(shell pwd)/" "sdk/OpenBK7231N/apps/$(APP_NAME)"
 
-sdk/OpenXR809/project/oxr_sharedApp/shared:
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	ln -s "$(shell pwd)/" "sdk/OpenXR809/project/oxr_sharedApp/shared"
-
-sdk/OpenBL602/customer_app/bl602_sharedApp/bl602_sharedApp/shared:
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	ln -s "$(shell pwd)/" "sdk/OpenBL602/customer_app/bl602_sharedApp/bl602_sharedApp/shared"
-
-sdk/OpenW800/sharedAppContainer/sharedApp:
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	@mkdir "sdk/OpenW800/sharedAppContainer"
-	ln -s "$(shell pwd)/" "sdk/OpenW800/sharedAppContainer/sharedApp"
-
-sdk/OpenW600/sharedAppContainer/sharedApp:
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	@mkdir -p "sdk/OpenW600/sharedAppContainer"
-	ln -s "$(shell pwd)/" "sdk/OpenW600/sharedAppContainer/sharedApp"
-
-sdk/OpenLN882H/project/OpenBeken/app:
-	@echo Create symlink for $(APP_NAME) into sdk folder
-	@mkdir -p "sdk/OpenLN882H/project/OpenBeken"
-	ln -s "$(shell pwd)/" "sdk/OpenLN882H/project/OpenBeken/app"
 
 
 # Build main binaries
-OpenBK7231T:
-	$(MAKE) APP_NAME=OpenBK7231T TARGET_PLATFORM=bk7231t SDK_PATH=sdk/OpenBK7231T APPS_BUILD_PATH=../bk7231t_os build-BK7231
+
 
 OpenBK7231N:
 	$(MAKE) APP_NAME=OpenBK7231N TARGET_PLATFORM=bk7231n SDK_PATH=sdk/OpenBK7231N APPS_BUILD_PATH=../bk7231n_os build-BK7231
 
-sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2:
-	cd sdk/OpenXR809/tools && wget -q "https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q2-update/+download/gcc-arm-none-eabi-4_9-2015q2-20150609-linux.tar.bz2" && tar -xf *.tar.bz2 && rm -f *.tar.bz2
 
 	
-.PHONY: OpenXR809 build-XR809
-# Retry OpenXR809 a few times to account for calibration file issues
-RETRY = 3
-OpenXR809:
-	@for i in `seq 1 ${RETRY}`; do ($(MAKE) -k build-XR809; echo Prebuild attempt $$i/${RETRY}); done
-	@echo Running build final time to check output
-	$(MAKE) build-XR809;
 
-build-XR809: submodules sdk/OpenXR809/project/oxr_sharedApp/shared sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2
-	$(MAKE) -C sdk/OpenXR809/src CC_DIR=$(PWD)/sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2/bin
-	$(MAKE) -C sdk/OpenXR809/src install CC_DIR=$(PWD)/sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2/bin
-	$(MAKE) -C sdk/OpenXR809/project/oxr_sharedApp/gcc CC_DIR=$(PWD)/sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2/bin
-	$(MAKE) -C sdk/OpenXR809/project/oxr_sharedApp/gcc image CC_DIR=$(PWD)/sdk/OpenXR809/tools/gcc-arm-none-eabi-4_9-2015q2/bin
-	mkdir -p output/$(APP_VERSION)
-	cp sdk/OpenXR809/project/oxr_sharedApp/image/xr809/xr_system.img output/$(APP_VERSION)/OpenXR809_$(APP_VERSION).img
 
 .PHONY: build-BK7231
 build-BK7231: submodules $(SDK_PATH)/apps/$(APP_NAME)
