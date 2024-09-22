@@ -66,45 +66,7 @@ build-BK7231: submodules $(SDK_PATH)/apps/$(APP_NAME)
 	rm $(SDK_PATH)/platforms/$(TARGET_PLATFORM)/toolchain/$(APPS_BUILD_PATH)/tools/generate/$(APP_NAME)_*.rbl || /bin/true
 	rm $(SDK_PATH)/platforms/$(TARGET_PLATFORM)/toolchain/$(APPS_BUILD_PATH)/tools/generate/$(APP_NAME)_*.bin || /bin/true
 
-OpenBL602: submodules sdk/OpenBL602/customer_app/bl602_sharedApp/bl602_sharedApp/shared
-	$(MAKE) -C sdk/OpenBL602/customer_app/bl602_sharedApp USER_SW_VER=$(APP_VERSION) CONFIG_CHIP_NAME=BL602 CONFIG_LINK_ROM=1 -j
-	$(MAKE) -C sdk/OpenBL602/customer_app/bl602_sharedApp USER_SW_VER=$(APP_VERSION) CONFIG_CHIP_NAME=BL602 bins
-	mkdir -p output/$(APP_VERSION)
-	cp sdk/OpenBL602/customer_app/bl602_sharedApp/build_out/bl602_sharedApp.bin output/$(APP_VERSION)/OpenBL602_$(APP_VERSION).bin
-	cp sdk/OpenBL602/customer_app/bl602_sharedApp/build_out/ota/dts40M_pt2M_boot2release_ef4015/FW_OTA.bin output/$(APP_VERSION)/OpenBL602_$(APP_VERSION)_OTA.bin
-	cp sdk/OpenBL602/customer_app/bl602_sharedApp/build_out/ota/dts40M_pt2M_boot2release_ef4015/FW_OTA.bin.xz output/$(APP_VERSION)/OpenBL602_$(APP_VERSION)_OTA.bin.xz
-	cp sdk/OpenBL602/customer_app/bl602_sharedApp/build_out/ota/dts40M_pt2M_boot2release_ef4015/FW_OTA.bin.xz.ota output/$(APP_VERSION)/OpenBL602_$(APP_VERSION)_OTA.bin.xz.ota
-	
-sdk/OpenW800/tools/w800/csky/bin: submodules
-	mkdir -p sdk/OpenW800/tools/w800/csky
-	# cd sdk/OpenW800/tools/w800/csky && wget -q "https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529111421/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz" && tar -xf *.tar.gz && rm -f *.tar.gz
-	if [ ! -e sdk/OpenW800/tools/w800/csky/got_csky-elfabiv2-tools-x86_64-minilibc-20210423 ]; then cd sdk/OpenW800/tools/w800/csky && wget -q "https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529111421/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz" && tar -xf *.tar.gz && rm -f *.tar.gz && touch got_csky-elfabiv2-tools-x86_64-minilibc-20210423 ; fi
 
-sdk/OpenW600/tools/gcc-arm-none-eabi-4_9-2014q4/bin: submodules
-	mkdir -p sdk/OpenW600/tools
-	cd sdk/OpenW600/tools && tar -xf ../support/*.tar.bz2
-
-.PHONY: OpenW800
-OpenW800: sdk/OpenW800/tools/w800/csky/bin sdk/OpenW800/sharedAppContainer/sharedApp
-	$(MAKE) -C sdk/OpenW800 EXTRA_CCFLAGS=-DPLATFORM_W800 CONFIG_W800_USE_LIB=n CONFIG_W800_TOOLCHAIN_PATH="$(shell realpath sdk/OpenW800/tools/w800/csky/bin)/"
-	mkdir -p output/$(APP_VERSION)
-	cp sdk/OpenW800/bin/w800/w800.fls output/$(APP_VERSION)/OpenW800_$(APP_VERSION).fls
-	cp sdk/OpenW800/bin/w800/w800_ota.img output/$(APP_VERSION)/OpenW800_$(APP_VERSION)_ota.img
-
-.PHONY: OpenW600
-OpenW600: sdk/OpenW600/tools/gcc-arm-none-eabi-4_9-2014q4/bin sdk/OpenW600/sharedAppContainer/sharedApp
-	$(MAKE) -C sdk/OpenW600 TOOL_CHAIN_PATH="$(shell realpath sdk/OpenW600/tools/gcc-arm-none-eabi-4_9-2014q4/bin)/" APP_VERSION=$(APP_VERSION)
-	mkdir -p output/$(APP_VERSION)
-	cp sdk/OpenW600/bin/w600/w600.fls output/$(APP_VERSION)/OpenW600_$(APP_VERSION).fls
-	cp sdk/OpenW600/bin/w600/w600_gz.img output/$(APP_VERSION)/OpenW600_$(APP_VERSION)_gz.img
-
-.PHONY: OpenLN882H
-OpenLN882H: submodules sdk/OpenLN882H/project/OpenBeken/app
-	CROSS_TOOLCHAIN_ROOT="/usr/" cmake sdk/OpenLN882H -B sdk/OpenLN882H/build
-	CROSS_TOOLCHAIN_ROOT="/usr/" cmake --build ./sdk/OpenLN882H/build
-	mkdir -p output/$(APP_VERSION)
-	cp sdk/OpenLN882H/build/bin/flashimage.bin output/$(APP_VERSION)/OpenLN882H_$(APP_VERSION).bin
-	cp sdk/OpenLN882H/build/bin/flashimage-ota-xz-v0.1.bin output/$(APP_VERSION)/OpenLN882H_$(APP_VERSION)_OTA.bin
 
 # clean .o files and output directory
 .PHONY: clean
