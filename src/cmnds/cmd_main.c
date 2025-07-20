@@ -924,7 +924,7 @@ commandResult_t CMD_Wifi_Off(const void *context, const char *cmd, const char *a
     bk_wlan_stop(STATION);
 
     // Wywołanie funkcji z Beken SDK do zatrzymania trybu punktu dostępowego (AP)
-    bk_wlan_stop(SOFT_AP);
+  //  bk_wlan_stop(SOFT_AP);
 
     // Zwracamy informację o pomyślnym wykonaniu komendy
     return CMD_RES_OK;
