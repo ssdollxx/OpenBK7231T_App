@@ -916,6 +916,22 @@ static commandResult_t CMD_WebServer(const void* context, const char* cmd, const
 }
 #endif
 
+commandResult_t CMD_Wifi_Off(const void *context, const char *cmd, const char *args, int cmdFlags) {
+    // Dodajemy informację do logów, że Wi-Fi jest wyłączane
+    addLogAdv(LOG_INFO, LOG_FEATURE_CMD, "CMD: Wyłączanie Wi-Fi...");
+
+    // Wywołanie funkcji z Beken SDK do zatrzymania trybu klienta (STA)
+    bk_wlan_stop(STATION);
+
+    // Wywołanie funkcji z Beken SDK do zatrzymania trybu punktu dostępowego (AP)
+    bk_wlan_stop(SOFT_AP);
+
+    // Zwracamy informację o pomyślnym wykonaniu komendy
+    return CMD_RES_OK;
+}
+
+
+
 void CMD_Init_Early() {
 	//cmddetail:{"name":"alias","args":"[Alias][Command with spaces]",
 	//cmddetail:"descr":"add an aliased command, so a command with spaces can be called with a short, nospaced alias",
@@ -961,6 +977,7 @@ void CMD_Init_Early() {
 	//cmddetail:"descr":"Enables dynamic power saving mode on Beken N/T, BL602, W600, W800 and LN882H. In the case of LN882H PowerSave will not work as a startup command, so use in autoexec. On LN882H PowerSave 1 = light sleep and Powersave >1 (eg PowerSave 2) = deeper sleep. On LN882H PowerSave 1 should be used if BL0937 metering is present. On all supported platforms PowerSave 0 can be used to disable power saving.",
 	//cmddetail:"fn":"CMD_PowerSave","file":"cmnds/cmd_main.c","requires":"",
 	//cmddetail:"examples":""}
+	CMD_RegisterCommand("wifi.off", CMD_Wifi_Off, NULL);
 	CMD_RegisterCommand("PowerSave", CMD_PowerSave, NULL);
 	//cmddetail:{"name":"if","args":"[Condition]['then'][CommandA]['else'][CommandB]",
 	//cmddetail:"descr":"Executed a conditional. Condition should be single line. You must always use 'then' after condition. 'else' is optional. Use aliases or quotes for commands with spaces",
