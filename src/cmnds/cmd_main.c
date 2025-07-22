@@ -14,6 +14,7 @@
 #include "../hal/hal_flashVars.h"
 #include "../httpserver/http_tcp_server.h"
 #include "../hal/hal_generic.h"
+#include "bk_pm.h"
 
 int cmd_uartInitIndex = 0;
 
