@@ -926,6 +926,9 @@ commandResult_t CMD_Wifi_Off(const void *context, const char *cmd, const char *a
     // Wywołanie funkcji z Beken SDK do zatrzymania trybu punktu dostępowego (AP)
   //  bk_wlan_stop(SOFT_AP);
 
+	bk_pm_sleep_mode_set(PM_MODE_LOW_VOLTAGE);              // Przełącza system w tryb niskonapięciowy
+bk_pm_power_save_mode_set(PM_POWER_SAVE_MODE_DYNAMIC);  // Dynamiczne zarządzanie energią
+
     // Zwracamy informację o pomyślnym wykonaniu komendy
     return CMD_RES_OK;
 }
